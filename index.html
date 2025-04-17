@@ -10,6 +10,13 @@
         /* Estilo personalizado para la fuente Inter */
         body {
             font-family: 'Inter', sans-serif;
+            display: flex; /* Added for footer */
+            flex-direction: column; /* Added for footer */
+            min-height: 100vh; /* Added for footer */
+        }
+        /* Make main container grow */
+        .main-container {
+             flex-grow: 1; /* Added for footer */
         }
         /* Estilos para transiciones suaves */
         .tab-content {
@@ -103,6 +110,10 @@
             background-color: #f9fafb; /* bg-gray-50 */
             color: #9ca3af; /* text-gray-400 */
         }
+        /* Footer styles */
+        .footer-notice {
+            flex-shrink: 0; /* Prevent footer shrinking */
+        }
 
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -111,7 +122,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 p-4 md:p-8">
 
-    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-xl p-6 md:p-10">
+    <div class="main-container max-w-6xl mx-auto bg-white rounded-lg shadow-xl p-6 md:p-10">
         <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-4">Panel de Estudio Interactivo</h1>
         <p class="text-center text-xl text-gray-600 mb-10">Bloque 1: Introducción y Herramientas I (Lógica y Lenguaje)</p>
 
@@ -130,7 +141,11 @@
 
         <div id="main-content-area">
             </div>
-    </div>
+    </div> <footer class="footer-notice max-w-6xl mx-auto text-center mt-10 mb-6 px-6">
+        <p class="text-xs text-gray-500">
+            Este panel utiliza recursos externos (fuentes y estilos de CDNs como Google Fonts, Font Awesome, Tailwind CSS) para mejorar su funcionalidad y apariencia. Estos servicios pueden recopilar datos técnicos según sus propias políticas de privacidad. Este sitio no utiliza cookies propias para rastrear tu actividad.
+        </p>
+    </footer>
 
     <script>
         // --- Datos del Contenido (Extraídos del PDF "BLOQUE 1...") ---
