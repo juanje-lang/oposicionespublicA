@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Estudio: Filosofía - Bloque 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilo personalizado para la fuente Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Estilos para transiciones suaves */
+        .tab-content {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 1; /* Start visible */
+        }
+        .hidden-content {
+            display: none;
+            opacity: 0;
+        }
+        /* Estilo para el botón de pestaña activo */
+        .tab-button.active {
+            border-bottom-color: #3b82f6; /* blue-500 */
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        /* Estilos para secciones colapsables */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.3s ease-out;
+            opacity: 0;
+        }
+        .collapsible-content.open {
+            max-height: 1000px; /* Adjust as needed, large enough for content */
+            opacity: 1;
+            transition: max-height 0.7s ease-in-out, opacity 0.5s ease-in-out;
+        }
+        .collapsible-trigger i.fa-chevron-right { /* Target only the chevron */
+            transition: transform 0.3s ease;
+        }
+        .collapsible-trigger.open i.fa-chevron-right { /* Target only the chevron */
+            transform: rotate(90deg);
+        }
+        /* Mejorar legibilidad de listas */
+        .content-section ul {
+            list-style-position: outside;
+            padding-left: 1.5rem; /* Indent list */
+        }
+        .content-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        /* Contenedor de pestañas con botones */
+        .tabs-navigation-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative; /* Para posicionar botones si es necesario */
+        }
+        /* Contenedor de pestañas desplazable */
+        .tabs-container {
+            flex-grow: 1; /* Ocupa el espacio disponible */
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            scroll-behavior: smooth; /* Smooth scrolling for JS */
+            border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+        }
+        .tabs-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar visually */
+            width: 0 !important; /* For Firefox */
+            height: 0 !important;
+        }
+        .tabs-nav {
+             display: inline-flex; /* Allow buttons to stay in line */
+             padding-bottom: 1px; /* Evita que el borde inferior corte el indicador activo */
+        }
+        /* Estilo botones de scroll */
+        .scroll-button {
+            flex-shrink: 0; /* Evita que los botones se encojan */
+            background-color: #f3f4f6; /* bg-gray-100 */
+            color: #4b5563; /* text-gray-600 */
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            border-radius: 9999px; /* rounded-full */
+            width: 2.5rem; /* w-10 */
+            height: 2.5rem; /* h-10 */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .scroll-button:hover {
+            background-color: #e5e7eb; /* hover:bg-gray-200 */
+            color: #1f2937; /* hover:text-gray-800 */
+        }
+        .scroll-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f9fafb; /* bg-gray-50 */
+            color: #9ca3af; /* text-gray-400 */
+        }
+
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800 p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-xl p-6 md:p-10">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-4">Panel de Estudio Interactivo</h1>
+        <p class="text-center text-xl text-gray-600 mb-10">Bloque 1: Introducción y Herramientas I (Lógica y Lenguaje)</p>
+
+        <div class="tabs-navigation-wrapper mb-8">
+            <button id="scroll-left-btn" class="scroll-button mr-2">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="tabs-container" id="tabs-scroll-container">
+                <nav class="tabs-nav -mb-px flex space-x-4 md:space-x-6" aria-label="Tabs">
+                    </nav>
+            </div>
+             <button id="scroll-right-btn" class="scroll-button ml-2">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div id="main-content-area">
+            </div>
+    </div>
+
+    <script>
+        // --- Datos del Contenido (Extraídos del PDF "BLOQUE 1...") ---
+        // (Mismos datos que la versión anterior - omitidos aquí por brevedad)
+        const syllabusData = [
+            // --- TEMA 1 ---
+            {
+                id: 'tema1',
+                title: 'Tema 1: Exp. Filosófica y Concepciones', // Título corto para pestaña
+                fullTitle: 'TEMA 1: LA EXPERIENCIA FILOSÓFICA Y SUS FORMAS: LAS CONCEPCIONES DE LA FILOSOFÍA',
+                content: `
+                    <p class="mb-4 text-gray-700">Este tema aborda la pregunta fundamental "¿Qué es la filosofía?". No existe una respuesta única, ya que la propia definición de filosofía es un problema filosófico. Explora la naturaleza de la experiencia filosófica como punto de partida y las diversas formas en que se ha concebido la filosofía a lo largo de la historia.</p>
+                    <div class="space-y-4">
+                        ${createCollapsible('La Experiencia Filosófica', `
+                            <h4 class="font-semibold text-lg text-indigo-700 mb-2">Concepto:</h4>
+                            <p class="mb-3">Se refiere al momento o actitud vital en que el ser humano trasciende lo inmediato y cotidiano para cuestionarse sobre el sentido último de la realidad, la existencia, el conocimiento o los valores. Surge a menudo de la admiración (thaumazein - Platón, Aristóteles), de situaciones límite (Jaspers - muerte, sufrimiento, culpa), de la duda (Descartes) o de la conciencia de la ignorancia (Sócrates).</p>
+                            <h4 class="font-semibold text-lg text-indigo-700 mb-2">Características:</h4>
+                            <ul class="list-disc">
+                                <li><strong>Radical:</strong> Va a la raíz de las cosas.</li>
+                                <li><strong>Universal:</strong> Concierne a todo ser humano en cuanto racional.</li>
+                                <li><strong>Crítica:</strong> Pone en cuestión las creencias asumidas.</li>
+                            </ul>
+                        `)}
+                        ${createCollapsible('Concepciones de la Filosofía (Formas Históricas)', `
+                            <div class="space-y-3">
+                                <div>
+                                    <h5 class="font-semibold text-blue-600">Filosofía como Amor a la Sabiduría (Grecia Antigua):</h5>
+                                    <ul class="list-disc ml-5 text-sm">
+                                        <li><strong>Autores Clave:</strong> Pitágoras (término), Sócrates (diálogo, autoexamen - "Conócete a ti mismo"), Platón (ascenso dialéctico a las Ideas, preparación para la muerte), Aristóteles (ciencia de primeras causas y principios).</li>
+                                        <li><strong>Conceptos Clave:</strong> Logos, Arkhé, Idea, Dialéctica, Mayéutica, Eudaimonía.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-blue-600">Filosofía como Sierva de la Teología (Edad Media):</h5>
+                                     <ul class="list-disc ml-5 text-sm">
+                                        <li><strong>Autores Clave:</strong> Agustín de Hipona (Credo ut intelligam), Tomás de Aquino (Intelligo ut credam, armonización razón y fe).</li>
+                                        <li><strong>Conceptos Clave:</strong> Razón y Fe, Demostraciones de Dios, Universales.</li>
+                                        <li><strong>Argumento:</strong> Razón subordinada a la fe para comprender verdades reveladas.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-blue-600">Filosofía como Reflexión sobre el Conocimiento y el Sujeto (Edad Moderna):</h5>
+                                     <ul class="list-disc ml-5 text-sm">
+                                        <li><strong>Autores Clave:</strong> Descartes (fundamento cierto - Cogito ergo sum), Kant (crítica de la razón, límites del conocimiento - ¿Qué puedo saber? ¿Qué debo hacer? ¿Qué me cabe esperar?).</li>
+                                        <li><strong>Conceptos Clave:</strong> Racionalismo, Empirismo, Idealismo Trascendental, Sujeto, Razón, Crítica.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-blue-600">Filosofía como Crítica de la Cultura y la Sociedad (Siglos XIX y XX):</h5>
+                                     <ul class="list-disc ml-5 text-sm">
+                                        <li><strong>Autores Clave:</strong> Marx (praxis transformadora), Nietzsche (crítica radical, "Dios ha muerto", voluntad de poder), Escuela de Frankfurt (Teoría Crítica), Foucault (poder y saber).</li>
+                                        <li><strong>Conceptos Clave:</strong> Materialismo Histórico, Alienación, Nihilismo, Voluntad de Poder, Genealogía, Razón Instrumental.</li>
+                                    </ul>
+                                </div>
+                                 <div>
+                                    <h5 class="font-semibold text-blue-600">Filosofía como Análisis del Lenguaje (Filosofía Analítica, Siglo XX):</h5>
+                                     <ul class="list-disc ml-5 text-sm">
+                                        <li><strong>Autores Clave:</strong> Russell, Wittgenstein (temprano: clarificación lógica; tardío: juegos del lenguaje), Carnap (Positivismo Lógico).</li>
+                                        <li><strong>Conceptos Clave:</strong> Giro Lingüístico, Significado, Referencia, Lenguaje Ordinario, Juegos del Lenguaje.</li>
+                                        <li><strong>Argumento:</strong> Problemas filosóficos surgen del mal uso del lenguaje; tarea es clarificarlo.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-blue-600">Otras Concepciones:</h5>
+                                     <ul class="list-disc ml-5 text-sm">
+                                        <li>Fenomenología (Husserl), Existencialismo (Sartre, Camus), Hermenéutica (Gadamer).</li>
+                                     </ul>
+                                </div>
+                            </div>
+                        `)}
+                        ${createCollapsible('Conexiones', `
+                            <h4 class="font-semibold text-lg text-indigo-700 mb-2">Internas (Bloque 1):</h4>
+                            <ul class="list-disc">
+                                <li>Análisis del lenguaje (Wittgenstein, Russell) -> Temas 3, 4, 5, 6, 7 (Lenguaje, Significado, Lógica).</li>
+                                <li>Búsqueda de fundamento (Descartes) y crítica de la razón (Kant) -> Presuponen lógica y lenguaje.</li>
+                            </ul>
+                            <h4 class="font-semibold text-lg text-indigo-700 mt-4 mb-2">Externas:</h4>
+                             <ul class="list-disc">
+                                <li>Pregunta por el ser (Grecia) -> Metafísica/Ontología (Bloque 2).</li>
+                                <li>Reflexión sobre conocimiento (Modernidad) -> Epistemología (Bloque 2).</li>
+                                <li>Razón/fe (Medievo) -> Filosofía de la Religión.</li>
+                                <li>Crítica social (Marx, Frankfurt) -> Filosofía Política y Social (Bloque 4).</li>
+                                <li>Preguntas kantianas -> Ética (Bloque 3), Antropología Filosófica (Bloque 2).</li>
+                            </ul>
+                        `)}
+                    </div>
+                `
+            },
+            // --- TEMA 2 ---
+            {
+                id: 'tema2',
+                title: 'Tema 2: Función de la Filosofía',
+                fullTitle: 'TEMA 2: LA FUNCIÓN DE LA FILOSOFÍA EN EL CONJUNTO DE LA CULTURA. LA RELACIÓN DEL SABER FILOSÓFICO CON EL SABER CIENTÍFICO Y OTROS SABERES.',
+                 content: `
+                    <p class="mb-4 text-gray-700">Este tema explora el papel que desempeña la filosofía dentro del entramado cultural y cómo se relaciona (y diferencia) de otras formas de saber, especialmente la ciencia.</p>
+                    <div class="space-y-4">
+                        ${createCollapsible('La Función de la Filosofía en la Cultura', `
+                            <ul class="list-disc space-y-2">
+                                <li><strong>Crítica:</strong> Cuestiona supuestos, prejuicios, fundamentos de instituciones (Ej: Sócrates, Nietzsche, Foucault).</li>
+                                <li><strong>Integradora y Unificadora:</strong> Ofrece visión de conjunto, conecta saberes (Ej: Aristóteles como ciencia de primeros principios).</li>
+                                <li><strong>Orientadora y Normativa:</strong> Guía la acción, reflexiona sobre fines y valores (Ética, Filosofía Política).</li>
+                                <li><strong>Clarificadora y Analítica:</strong> Analiza conceptos fundamentales (verdad, realidad, justicia). Relevante en filosofía analítica.</li>
+                                <li><strong>Terapéutica:</strong> Búsqueda de serenidad, disolución de pseudo-problemas (Helenismo, Wittgenstein).</li>
+                                <li><strong>Hermenéutica:</strong> Interpreta tradiciones, textos, símbolos (Gadamer).</li>
+                            </ul>
+                        `)}
+                        ${createCollapsible('Relación con el Saber Científico', `
+                            <h4 class="font-semibold text-lg text-indigo-700 mb-2">Puntos Comunes:</h4>
+                            <p class="mb-3">Búsqueda de conocimiento racional, metódico, sistemático y crítico. Origen común (logos vs. mythos).</p>
+                            <h4 class="font-semibold text-lg text-indigo-700 mb-2">Diferencias Fundamentales:</h4>
+                            <ul class="list-disc space-y-1">
+                                <li><strong>Objeto:</strong> Ciencia (ámbitos específicos, causas, leyes empíricas) vs. Filosofía (cuestiones últimas, fundamentos, totalidad, trasciende lo empírico).</li>
+                                <li><strong>Método:</strong> Ciencia (hipotético-deductivo, experimentación) vs. Filosofía (análisis conceptual, argumentación, reflexión crítica, fenomenología, hermenéutica; no primariamente empírica).</li>
+                                <li><strong>Progreso:</strong> Ciencia (acumulativo, revoluciones - Kuhn) vs. Filosofía (reinterpretación de problemas perennes).</li>
+                                <li><strong>Neutralidad Valorativa:</strong> Ciencia (aspira a ser neutral) vs. Filosofía (se ocupa explícitamente de valores y fines).</li>
+                            </ul>
+                             <h4 class="font-semibold text-lg text-indigo-700 mt-4 mb-2">Relaciones Históricas y Conceptuales:</h4>
+                             <ul class="list-disc space-y-1">
+                                <li>Filosofía como "Madre de las Ciencias".</li>
+                                <li>Filosofía de la Ciencia: Reflexión sobre la ciencia (métodos, límites, supuestos - Popper, Kuhn). -> Bloque 2</li>
+                                <li>Implicaciones Filosóficas de la Ciencia: Descubrimientos científicos plantean nuevas preguntas filosóficas.</li>
+                             </ul>
+                        `)}
+                         ${createCollapsible('Relación con Otros Saberes', `
+                            <ul class="list-disc space-y-2">
+                                <li><strong>Saber Vulgar/Ordinario:</strong> Punto de partida, pero sometido a crítica y fundamentación racional.</li>
+                                <li><strong>Saber Mítico/Religioso:</strong> Filosofía como alternativa racional (mito al logos). Relación compleja: subordinación, crítica, diálogo. Abordan cuestiones últimas por vías diferentes (razón vs. fe).</li>
+                                <li><strong>Saber Artístico:</strong> Exploran realidad/experiencia humana por vías distintas (concepto/argumento vs. sensibilidad/emoción/forma estética). -> Estética (Bloque 3).</li>
+                                <li><strong>Saber Técnico:</strong> Orientado a producción/utilidad. Filosofía reflexiona sobre implicaciones éticas/sociales (Filosofía de la Técnica).</li>
+                            </ul>
+                        `)}
+                        ${createCollapsible('Conexiones', `
+                            <h4 class="font-semibold text-lg text-indigo-700 mb-2">Internas (Bloque 1):</h4>
+                            <ul class="list-disc">
+                                <li>Función clarificadora -> Temas 3, 4, 5, 6, 7 (Lenguaje, Lógica).</li>
+                                <li>Distinción saberes -> Tema 1 (Concepciones).</li>
+                            </ul>
+                            <h4 class="font-semibold text-lg text-indigo-700 mt-4 mb-2">Externas:</h4>
+                             <ul class="list-disc">
+                                <li>Relación ciencia -> Filosofía de la Ciencia, Epistemología (Bloque 2).</li>
+                                <li>Función orientadora -> Ética, Filosofía Política (Bloques 3, 4).</li>
+                                <li>Relación arte -> Estética (Bloque 3).</li>
+                                <li>Reflexión técnica -> Filosofía Contemporánea, Antropología.</li>
+                            </ul>
+                        `)}
+                    </div>
+                `
+            },
+             // --- TEMA 3 ---
+            {
+                id: 'tema3',
+                title: 'Tema 3: Comunicación y Lenguaje',
+                fullTitle: 'TEMA 3: LA COMUNICACIÓN HUMANA Y EL LENGUAJE: LENGUAJE NATURAL Y LENGUAJES FORMALES.',
+                content: `
+                    <p class="mb-4 text-gray-700">Inicia el estudio del lenguaje como herramienta filosófica, distinguiendo entre lenguaje cotidiano y lenguajes artificiales.</p>
+                     <div class="space-y-4">
+                        ${createCollapsible('La Comunicación Humana', `
+                            <p><strong>Concepto:</strong> Proceso de transmisión (info, ideas, emociones) mediante sistema compartido de signos.</p>
+                            <p><strong>Elementos (Jakobson):</strong> Emisor, Receptor, Mensaje, Código, Canal, Contexto.</p>
+                            <p><strong>Funciones (Jakobson):</strong> Emotiva, Conativa, Referencial, Poética, Fática, Metalingüística (suelen mezclarse).</p>
+                            <p><strong>Complejidad:</strong> Incluye pragmática (intenciones, actos de habla - Austin, Searle), aspectos no verbales, culturales.</p>
+                        `)}
+                        ${createCollapsible('El Lenguaje', `
+                            <p><strong>Concepto:</strong> Sistema de signos (palabras) y reglas (gramática) para comunicación y pensamiento. Facultad humana.</p>
+                            <p><strong>Dimensiones (Morris):</strong> Sintaxis (relación signos-signos), Semántica (signos-designado, significado - Tema 4), Pragmática (signos-usuarios/contexto).</p>
+                            <p><strong>Lenguaje y Pensamiento:</strong> Debate sobre su relación (¿determina?, ¿precede?, ¿interdependientes? - Vygotsky). Filosofía contemporánea ve relación estrecha.</p>
+                        `)}
+                         ${createCollapsible('Lenguaje Natural (u Ordinario)', `
+                            <p><strong>Concepto:</strong> Lenguas históricas surgidas espontáneamente (español, inglés...).</p>
+                            <p><strong>Características:</strong> Riqueza, Flexibilidad, Ambigüedad, Vaguedad, Contextualidad, Evolución.</p>
+                            <p><strong>Autores:</strong> Wittgenstein (tardío - juegos de lenguaje), Austin (actos de habla).</p>
+                        `)}
+                         ${createCollapsible('Lenguajes Formales (o Artificiales)', `
+                            <p><strong>Concepto:</strong> Diseñados explícitamente con sintaxis precisa y reglas rigurosas.</p>
+                            <p><strong>Ejemplos:</strong> Lógica formal (Temas 6, 7), matemáticas, lenguajes de programación.</p>
+                            <p><strong>Características:</strong> Precisión, Rigor, Sintaxis Definida (alfabeto, reglas de formación), Reglas de Inferencia (Tema 6, 7), Calculabilidad.</p>
+                            <p><strong>Finalidad:</strong> Superar limitaciones del lenguaje natural para razonamiento riguroso, demostración, computación.</p>
+                            <p><strong>Autores:</strong> Frege, Russell, Hilbert, Tarski.</p>
+                        `)}
+                        ${createCollapsible('Conexiones', `
+                            <h4 class="font-semibold text-lg text-indigo-700 mb-2">Internas (Bloque 1):</h4>
+                             <ul class="list-disc">
+                                <li>Entrada a Temas 4 (Significado) y 5, 6, 7 (Lógica).</li>
+                                <li>Distinción natural/formal -> por qué lógica simbólica (Tema 5).</li>
+                                <li>Dimensiones lenguaje -> estructuran análisis posterior.</li>
+                             </ul>
+                            <h4 class="font-semibold text-lg text-indigo-700 mt-4 mb-2">Externas:</h4>
+                             <ul class="list-disc">
+                                <li>Lenguaje-pensamiento -> Epistemología (Bloque 2), Filosofía de la Mente.</li>
+                                <li>Pragmática -> Filosofía del Lenguaje, Ética del Discurso (Habermas).</li>
+                                <li>Naturaleza simbólica -> Antropología Filosófica (Bloque 2 - Cassirer).</li>
+                             </ul>
+                        `)}
+                    </div>
+                `
+            },
+             // --- TEMA 4 ---
+            {
+                id: 'tema4',
+                title: 'Tema 4: Significado (Sentido y Ref.)',
+                fullTitle: 'TEMA 4: SENTIDO Y REFERENCIA. TEORÍAS DEL SIGNIFICADO.',
+                 content: `
+                    <p class="mb-4 text-gray-700">Profundiza en la dimensión semántica: ¿Cómo las palabras se relacionan con el mundo y adquieren significado?</p>
+                     <div class="space-y-4">
+                        ${createCollapsible('Sentido y Referencia (Frege)', `
+                            <p><strong>Distinción Fundamental:</strong> Propuesta por Frege.</p>
+                            <ul class="list-disc ml-5 mb-3">
+                                <li><strong>Referencia (Bedeutung):</strong> Objeto al que se refiere la expresión (Ej: "Aristóteles" -> filósofo; "Lucero vespertino"/"Lucero matutino" -> Venus).</li>
+                                <li><strong>Sentido (Sinn):</strong> Modo de darse la referencia, información comunicada (Ej: "Lucero vespertino" y "Lucero matutino" tienen = referencia, != sentido). El sentido determina la referencia.</li>
+                            </ul>
+                            <p><strong>Importancia:</strong> Explica informatividad de enunciados de identidad (sentidos diferentes), problema de nombres sin referente ("Ulises"). Para Frege, oraciones tienen sentido (pensamiento) y referencia (Valor de Verdad: V/F).</p>
+                        `)}
+                        ${createCollapsible('Teorías del Significado', `
+                            <div class="space-y-3">
+                                <div>
+                                    <h5 class="font-semibold text-blue-600">Teorías Referencialistas:</h5>
+                                    <p class="text-sm">Idea: Significado = objeto referido. Problemas: palabras sin referente, abstractas, sinónimos. Autores: Russell, Wittgenstein (temprano - Atomismo Lógico, Teoría Figurativa).</p>
+                                </div>
+                                 <div>
+                                    <h5 class="font-semibold text-blue-600">Teorías Ideacionales/Mentalistas:</h5>
+                                    <p class="text-sm">Idea: Significado = idea/concepto mental. Autores: Locke. Problemas: privacidad de ideas, comunicación, fijación de ideas.</p>
+                                </div>
+                                 <div>
+                                    <h5 class="font-semibold text-blue-600">Teorías Conductistas:</h5>
+                                    <p class="text-sm">Idea: Significado = conducta observable (estímulo-respuesta). Autores: Skinner, Quine. Problemas: creatividad lenguaje, comprensión, intencionalidad, reduccionismo.</p>
+                                </div>
+                                 <div>
+                                    <h5 class="font-semibold text-blue-600">Teorías del Uso:</h5>
+                                    <p class="text-sm">Idea: Significado = uso en el lenguaje/contexto ("juego de lenguaje"). "No preguntes por el significado, pregunta por el uso". Autores: Wittgenstein (tardío). Conceptos: Juegos de Lenguaje, Parecidos de Familia, Formas de Vida.</p>
+                                </div>
+                                 <div>
+                                    <h5 class="font-semibold text-blue-600">Teorías Verificacionistas (Positivismo Lógico):</h5>
+                                    <p class="text-sm">Idea: Significado (cognitivo) = método de verificación empírica. Si no es analítica ni verificable, carece de significado (metafísica, ética...). Autores: Círculo de Viena (Carnap, Schlick, Ayer). Problemas: principio no verificable, restrictivo.</p>
+                                </div>
+                                 <div>
+                                    <h5 class="font-semibold text-blue-600">Teorías Pragmáticas:</h5>
+                                    <p class="text-sm">Idea: Énfasis en intención del hablante y contexto. Significado se construye en interacción. Autores: Grice (implicaturas), Austin/Searle (actos de habla).</p>
+                                </div>
+                            </div>
+                        `)}
+                         ${createCollapsible('Conceptos Filosóficos Fundamentales', `
+                            <p>Significado, Referencia, Sentido, Verdad, Uso, Juego de Lenguaje, Acto de Habla, Intención.</p>
+                        `)}
+                        ${createCollapsible('Conexiones', `
+                             <h4 class="font-semibold text-lg text-indigo-700 mb-2">Internas (Bloque 1):</h4>
+                             <ul class="list-disc">
+                                <li>Desarrolla semántica (Tema 3).</li>
+                                <li>Distinción Fregeana -> Lógica formal (Temas 5, 6, 7).</li>
+                                <li>Teorías uso/pragmáticas -> critican formalismo, recuerdan lenguaje natural (Tema 3).</li>
+                                <li>Verificacionismo -> relación filosofía-ciencia (Tema 2).</li>
+                             </ul>
+                            <h4 class="font-semibold text-lg text-indigo-700 mt-4 mb-2">Externas:</h4>
+                             <ul class="list-disc">
+                                <li>Filosofía del Lenguaje.</li>
+                                <li>Significado-verdad -> Epistemología (Bloque 2), teorías de la verdad.</li>
+                                <li>Crítica metafísica (Positivismo Lógico) -> Metafísica (Bloque 2).</li>
+                                <li>Pragmática -> Ética (del discurso), Filosofía Social.</li>
+                             </ul>
+                        `)}
+                    </div>
+                `
+            },
+            // --- TEMA 5 ---
+             {
+                id: 'tema5',
+                title: 'Tema 5: Lógica Clásica a Simbólica',
+                fullTitle: 'TEMA 5: DE LA LÓGICA CLÁSICA A LA LÓGICA SIMBÓLICA.',
+                 content: `
+                    <p class="mb-4 text-gray-700">Traza la evolución histórica de la lógica, desde Aristóteles hasta la revolución de la lógica simbólica/matemática.</p>
+                     <div class="space-y-4">
+                        ${createCollapsible('Lógica Clásica (o Aristotélica)', `
+                            <p><strong>Fundador:</strong> Aristóteles (S. IV a.C., Órganon).</p>
+                            <p><strong>Objeto:</strong> Análisis del razonamiento deductivo (silogismo categórico).</p>
+                            <p><strong>Conceptos Clave:</strong> Término, Proposición (Sujeto-Cópula-Predicado, tipos A, E, I, O), Silogismo Categórico (3 proposiciones, 3 términos), Cuadro de Oposición, Principios Lógicos Fundamentales (Identidad, No Contradicción, Tercio Excluso).</p>
+                            <p><strong>Características:</strong> Centrada en Sujeto-Predicado, usa lenguaje natural (con formalización), lógica de términos/clases.</p>
+                            <p><strong>Desarrollos:</strong> Lógica estoica, lógica medieval.</p>
+                            <p><strong>Limitaciones:</strong> Dificultad con relaciones complejas y proposiciones compuestas, análisis interno limitado.</p>
+                        `)}
+                         ${createCollapsible('La Revolución de la Lógica Simbólica (Matemática/Formal)', `
+                            <p><strong>Contexto:</strong> Finales S. XIX - Principios S. XX. Necesidad de fundamentar matemáticas, superar ambigüedades.</p>
+                            <p><strong>Pioneros:</strong> Boole (álgebra lógica), Frege (padre lógica moderna, Conceptografía 1879: lógica predicados, cuantificadores, notación formal, sentido/referencia, logicismo), Peirce (lógica relaciones, cuantificadores), Peano (notación), Russell & Whitehead (Principia Mathematica 1910-13, intento logicista, Paradoja de Russell).</p>
+                            <p><strong>Características Principales:</strong></p>
+                            <ul class="list-disc ml-5">
+                                <li><strong>Simbolización:</strong> Lenguaje formal artificial (Tema 3) para eliminar ambigüedad.</li>
+                                <li><strong>Análisis Proposicional:</strong> Conexión de proposiciones (Lógica Proposiciones - Tema 6). Símbolos conectivas (¬, ∧, ∨, →, ↔).</li>
+                                <li><strong>Análisis Intraproposicional (Lógica Predicados - Tema 6):</strong> Estructura interna (individuos, propiedades, relaciones). Cuantificadores (∀, ∃).</li>
+                                <li><strong>Enfoque Axiomático y Calculístico:</strong> Sistema formal (Tema 7) con axiomas y reglas para derivar verdades lógicas.</li>
+                                <li><strong>Mayor Potencia y Alcance:</strong> Analiza argumentos más complejos.</li>
+                            </ul>
+                        `)}
+                         ${createCollapsible('Continuidad y Ruptura', `
+                            <p>Lógica simbólica incluye y supera a la clásica. Ruptura: lenguaje formal, análisis más allá de sujeto-predicado.</p>
+                        `)}
+                         ${createCollapsible('Conexiones', `
+                             <h4 class="font-semibold text-lg text-indigo-700 mb-2">Internas (Bloque 1):</h4>
+                             <ul class="list-disc">
+                                <li>Paso lenguaje natural (T3) a formal (T3).</li>
+                                <li>Introduce componentes detallados en T6 (proposiciones, predicados).</li>
+                                <li>Prepara T7 (sistema formal axiomático).</li>
+                                <li>Precisión Frege -> T4 (sentido/referencia).</li>
+                             </ul>
+                            <h4 class="font-semibold text-lg text-indigo-700 mt-4 mb-2">Externas:</h4>
+                             <ul class="list-disc">
+                                <li>Filosofía de las Matemáticas (logicismo, formalismo...).</li>
+                                <li>Filosofía Analítica (Russell, Wittgenstein, Círculo Viena) -> T1.</li>
+                                <li>Aplicaciones: informática, IA, lingüística computacional.</li>
+                             </ul>
+                        `)}
+                    </div>
+                `
+            },
+             // --- TEMA 6 ---
+             {
+                id: 'tema6',
+                title: 'Tema 6: Cálculo Proposiciones y Predicados',
+                fullTitle: 'TEMA 6: EL CÁLCULO DE PROPOSICIONES Y DE PREDICADOS.',
+                 content: `
+                    <p class="mb-4 text-gray-700">Desglosa los dos componentes fundamentales de la lógica simbólica: lógica proposicional y lógica de predicados.</p>
+                     <div class="space-y-4">
+                        ${createCollapsible('Cálculo de Proposiciones (Lógica Proposicional)', `
+                            <p><strong>Objeto:</strong> Validez de razonamientos basada en conexión de proposiciones (sin análisis interno) mediante conectivas.</p>
+                            <p><strong>Elementos:</strong> Variables Proposicionales (p, q, r...), Conectivas Lógicas (¬, ∧, ∨, →, ↔), Símbolos Auxiliares (paréntesis).</p>
+                            <p><strong>Fórmulas Bien Formadas (FBF):</strong> Expresiones sintácticamente correctas.</p>
+                            <p><strong>Semántica: Tablas de Verdad:</strong> Método para determinar valor de verdad (V/F) de fórmulas compuestas. Cada conectiva tiene su tabla.</p>
+                            <p><strong>Conceptos Semánticos Clave:</strong> Tautología (siempre V, verdad lógica), Contradicción (siempre F), Contingencia (a veces V, a veces F).</p>
+                            <p><strong>Métodos de Prueba (Sintácticos):</strong> Deducción Natural (reglas de inferencia como Modus Ponens, Modus Tollens...), Cálculo Axiomático (axiomas + reglas).</p>
+                            <p><strong>Validez Lógica:</strong> Imposible premisas V y conclusión F. Equivale a que (Premisa1 ∧ Premisa2...) → Conclusión sea tautología.</p>
+                        `)}
+                        ${createCollapsible('Cálculo de Predicados (Lógica Cuantificacional / Primer Orden)', `
+                            <p><strong>Necesidad:</strong> Analizar argumentos dependientes de estructura interna (Ej: silogismo Sócrates).</p>
+                            <p><strong>Objeto:</strong> Analiza estructura interna (individuos, propiedades, relaciones) e introduce cuantificadores.</p>
+                            <p><strong>Elementos (añadidos):</strong> Términos (Constantes de Individuo a, b...; Variables de Individuo x, y...), Letras de Predicado (P, Q... con aridad), Cuantificadores (Universal ∀, Existencial ∃).</p>
+                            <p><strong>Fórmulas Atómicas y Moleculares:</strong> Atómica (Predicado + términos, ej: Pa). Molecular (conexión de fórmulas con conectivas y/o cuantificadores).</p>
+                            <p><strong>Alcance Cuantificadores:</strong> Parte afectada. Variables libres vs. ligadas. Sentencia (sin variables libres).</p>
+                            <p><strong>Semántica: Interpretaciones y Modelos:</strong> Más complejo que tablas. Requiere Universo de Discurso, asignar referentes (constantes) y extensiones (predicados). Fórmula válida = verdadera en toda interpretación.</p>
+                            <p><strong>Métodos de Prueba (Sintácticos):</strong> Extensión de sistemas anteriores con reglas para cuantificadores. Más complejo (no decidible).</p>
+                        `)}
+                        ${createCollapsible('Conexiones', `
+                             <h4 class="font-semibold text-lg text-indigo-700 mb-2">Internas (Bloque 1):</h4>
+                             <ul class="list-disc">
+                                <li>Desarrolla sistemas de T5.</li>
+                                <li>Usa lenguajes formales de T3.</li>
+                                <li>Semántica conecta con T4 (referencia, verdad).</li>
+                                <li>Prepara T7 (propiedades sistemas formales).</li>
+                             </ul>
+                            <h4 class="font-semibold text-lg text-indigo-700 mt-4 mb-2">Externas:</h4>
+                             <ul class="list-disc">
+                                <li>Fundamento lógica matemática, computación.</li>
+                                <li>Herramienta en Filosofía Ciencia, Lenguaje, Metafísica (Bloque 2).</li>
+                             </ul>
+                        `)}
+                    </div>
+                `
+            },
+             // --- TEMA 7 ---
+             {
+                id: 'tema7',
+                title: 'Tema 7: Lógica como Sistema Formal; Límites',
+                fullTitle: 'TEMA 7: LA LÓGICA COMO SISTEMA FORMAL AXIOMÁTICO; LOS LIMITES DE LOS SISTEMAS FORMALES AXIOMÁTICOS.',
+                 content: `
+                    <p class="mb-4 text-gray-700">Examina la estructura de la lógica como sistema axiomático y los resultados metalógicos (Teoremas de Gödel) que revelaron sus límites.</p>
+                    <div class="space-y-4">
+                        ${createCollapsible('La Lógica como Sistema Formal Axiomático', `
+                            <p><strong>Sistema Formal:</strong> Definido por: Lenguaje formal (T3), Axiomas (puntos de partida no demostrados), Reglas de Inferencia (sintácticas, para derivar teoremas).</p>
+                            <p><strong>Lógica como Sistema Axiomático:</strong> Lógica proposicional y de predicados (T6) pueden presentarse así (axiomas = tautologías/verdades lógicas; reglas = MP, reglas cuantificadores).</p>
+                            <p><strong>Objetivo:</strong> Fundamentación rigurosa, explícita, formal de la validez lógica. Búsqueda de certeza y mecanización.</p>
+                            <p><strong>Propiedades Deseables (Metateoría):</strong></p>
+                            <ul class="list-disc ml-5">
+                                <li><strong>Consistencia:</strong> No derivar contradicciones (A y ¬A). Indispensable.</li>
+                                <li><strong>Completitud (Semántica):</strong> Todas las verdades lógicas son derivables como teoremas. (Lógica proposicional y predicados 1er orden son completas - Gödel 1929).</li>
+                                <li><strong>Decidibilidad:</strong> Algoritmo para determinar si una fórmula es teorema. (Lógica proposicional es decidible; predicados 1er orden no lo es - Church, Turing).</li>
+                            </ul>
+                        `)}
+                         ${createCollapsible('Límites: Programa de Hilbert y Teoremas de Gödel', `
+                            <p><strong>Programa de Hilbert (principios S. XX):</strong> Axiomatizar matemáticas (aritmética, análisis) y demostrar su consistencia y completitud (toda verdad matemática demostrable) usando metamatemática finitista. Buscaba certeza.</p>
+                            <p><strong>Teoremas de Incompletitud de Gödel (1931):</strong> Revolucionarios. Aplican a sistemas formales axiomáticos consistentes y potentes (capaces de expresar aritmética básica).</p>
+                            <ul class="list-disc ml-5">
+                                <li><strong>Primer Teorema:</strong> En tal sistema, existen proposiciones verdaderas (sobre números naturales) no demostrables ni refutables dentro del sistema (es incompleto sintácticamente). Construyó fórmula G ("Yo no soy demostrable"). Si sistema es consistente, G es verdadera pero indemostrable.</li>
+                                <li><strong>Segundo Teorema:</strong> Ningún sistema así puede demostrar su propia consistencia usando solo sus propios medios (a menos que sea inconsistente). Frustró objetivo de Hilbert.</li>
+                            </ul>
+                            <p><strong>Implicaciones Filosóficas Profundas:</strong></p>
+                             <ul class="list-disc ml-5">
+                                <li>Separación Verdad / Demostrabilidad (hay verdades matemáticas indemostrables).</li>
+                                <li>Límites de Axiomatización / Formalización (ningún sistema finito captura toda la verdad matemática/aritmética).</li>
+                                <li>Imposibilidad Programa de Hilbert.</li>
+                                <li>Debate sobre IA / Mente (¿mente = sistema formal? - Lucas, Penrose; controvertido).</li>
+                                <li>No afecta completitud *semántica* de lógica predicados 1er orden.</li>
+                             </ul>
+                        `)}
+                        ${createCollapsible('Conceptos Filosóficos Fundamentales', `
+                            <p>Sistema Formal, Axioma, Regla de Inferencia, Teorema, Consistencia, Completitud (semántica y sintáctica), Decidibilidad, Metateoría, Verdad vs. Demostrabilidad.</p>
+                        `)}
+                         ${createCollapsible('Conexiones', `
+                            <h4 class="font-semibold text-lg text-indigo-700 mb-2">Internas (Bloque 1):</h4>
+                             <ul class="list-disc">
+                                <li>Sintetiza visión lógica simbólica (T5) como sistema axiomático (usando T6).</li>
+                                <li>Muestra límites lenguajes formales (T3) al axiomatizar teorías potentes.</li>
+                             </ul>
+                            <h4 class="font-semibold text-lg text-indigo-700 mt-4 mb-2">Externas:</h4>
+                             <ul class="list-disc">
+                                <li>Filosofía de las Matemáticas.</li>
+                                <li>Teoría de la Computabilidad (Turing, Church).</li>
+                                <li>Epistemología (Bloque 2 - límites conocimiento fundamentado).</li>
+                                <li>Filosofía de la Mente (naturaleza inteligencia).</li>
+                             </ul>
+                        `)}
+                    </div>
+                `
+            }
+        ];
+
+        // --- Lógica del Panel ---
+
+        let currentTabId = syllabusData[0].id; // Pestaña inicial (Tema 1)
+
+        // Elementos del DOM
+        const tabsNav = document.querySelector('.tabs-nav');
+        const mainContentArea = document.getElementById('main-content-area');
+        const scrollLeftBtn = document.getElementById('scroll-left-btn');
+        const scrollRightBtn = document.getElementById('scroll-right-btn');
+        const tabsContainer = document.getElementById('tabs-scroll-container');
+
+
+        // --- Funciones Auxiliares ---
+
+        // Función para crear HTML de sección colapsable
+        function createCollapsible(title, content) {
+            // Usar un ID único basado en el título para evitar colisiones
+             // Limpiar el título para crear un ID válido
+            const safeTitle = title.replace(/[^a-zA-Z0-9-_]/g, ''); // Elimina caracteres no válidos
+            const collapseId = `collapse-${safeTitle}-${Math.random().toString(36).substring(2, 9)}`; // Añadir aleatoriedad
+
+            return `
+                <div class="border border-gray-200 rounded-md overflow-hidden mb-2">
+                    <button
+                        onclick="toggleCollapse('${collapseId}')"
+                        class="collapsible-trigger w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none text-left"
+                    >
+                        <span class="font-medium text-gray-700">${title}</span>
+                        <i class="fas fa-chevron-right text-gray-500 flex-shrink-0 ml-2"></i>
+                    </button>
+                    <div id="${collapseId}" class="collapsible-content px-4 pb-4 pt-2 bg-white">
+                        ${content}
+                    </div>
+                </div>
+            `;
+        }
+
+         // Función para manejar el colapso/expansión
+        function toggleCollapse(id) {
+            const content = document.getElementById(id);
+            const trigger = content.previousElementSibling; // El botón es el hermano anterior
+            if (!content || !trigger) return; // Safety check
+
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                trigger.classList.remove('open');
+            } else {
+                // Opcional: cerrar otros elementos abiertos si se quiere un acordeón
+                // closeAllCollapsibles(content.closest('.space-y-4')); // Cierra hermanos
+                content.classList.add('open');
+                trigger.classList.add('open');
+            }
+        }
+
+        // Opcional: Función para cerrar todos los colapsables en un contenedor
+        function closeAllCollapsibles(container) {
+            if (!container) return;
+            container.querySelectorAll('.collapsible-content.open').forEach(openContent => {
+                openContent.classList.remove('open');
+                const trigger = openContent.previousElementSibling;
+                 if (trigger) trigger.classList.remove('open');
+            });
+        }
+
+
+        // --- Lógica Principal ---
+
+        // Función para mostrar el contenido de un tema
+        function displayThemeContent(themeId) {
+            const themeData = syllabusData.find(theme => theme.id === themeId);
+            if (!themeData) {
+                mainContentArea.innerHTML = '<p>Error: Tema no encontrado.</p>';
+                return;
+            }
+
+            mainContentArea.innerHTML = `
+                <div id="${themeId}-content" class="tab-content p-1">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">${themeData.fullTitle}</h2>
+                    <div class="content-section text-gray-700 leading-relaxed">
+                        ${themeData.content}
+                    </div>
+                </div>
+            `;
+            // Asegurarse de que el contenido sea visible (eliminar clase hidden si existiera)
+            const contentDiv = document.getElementById(`${themeId}-content`);
+             if(contentDiv) {
+                 contentDiv.classList.remove('hidden-content');
+                 contentDiv.style.opacity = 1;
+             }
+        }
+
+        // Función para cambiar de pestaña
+        function showTab(tabId) {
+            if (currentTabId === tabId) return; // No hacer nada si ya está activa
+
+            currentTabId = tabId;
+
+            // Actualizar botones de pestaña
+            document.querySelectorAll('.tab-button').forEach(button => {
+                if (button.getAttribute('data-tab') === tabId) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+
+            // Mostrar contenido del tema seleccionado
+            displayThemeContent(tabId);
+
+            // Opcional: Asegurarse de que la pestaña activa sea visible en el scroll
+            const activeButton = tabsNav.querySelector(`.tab-button[data-tab="${tabId}"]`);
+            if (activeButton) {
+                activeButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+            // Actualizar estado botones scroll después de cambiar de pestaña
+             updateScrollButtonsState();
+        }
+
+        // Función para actualizar el estado (activado/desactivado) de los botones de scroll
+        function updateScrollButtonsState() {
+             if (!tabsContainer || !scrollLeftBtn || !scrollRightBtn) return; // Safety check
+
+            const maxScrollLeft = tabsContainer.scrollWidth - tabsContainer.clientWidth;
+            // Añadir una pequeña tolerancia para evitar errores de precisión flotante
+            const tolerance = 1;
+
+            scrollLeftBtn.disabled = tabsContainer.scrollLeft <= tolerance;
+            scrollRightBtn.disabled = tabsContainer.scrollLeft >= maxScrollLeft - tolerance;
+
+             // Ocultar botones si no hay scroll
+             if (tabsContainer.scrollWidth <= tabsContainer.clientWidth) {
+                 scrollLeftBtn.style.display = 'none';
+                 scrollRightBtn.style.display = 'none';
+             } else {
+                 scrollLeftBtn.style.display = 'inline-flex';
+                 scrollRightBtn.style.display = 'inline-flex';
+             }
+        }
+
+        // --- Inicialización ---
+        function initializeDashboard() {
+             if (!tabsNav || !mainContentArea || !tabsContainer || !scrollLeftBtn || !scrollRightBtn) {
+                 console.error("Error: No se encontraron elementos esenciales del DOM.");
+                 return;
+             }
+            // Generar botones de pestaña
+            tabsNav.innerHTML = syllabusData.map((theme, index) => `
+                <button
+                    onclick="showTab('${theme.id}')"
+                    class="tab-button ${index === 0 ? 'active' : ''} py-3 px-3 md:py-4 md:px-4 border-b-2 border-transparent text-sm md:text-base font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none whitespace-nowrap"
+                    data-tab="${theme.id}"
+                >
+                    ${theme.title} </button>
+            `).join('');
+
+            // Cargar contenido inicial (Tema 1)
+            displayThemeContent(currentTabId);
+
+            // Configurar listeners para botones de scroll
+            scrollLeftBtn.addEventListener('click', () => {
+                // Desplazar una cantidad fija o basada en el ancho visible
+                const scrollAmount = tabsContainer.clientWidth * 0.8; // Desplazar 80% del ancho visible
+                tabsContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            });
+
+            scrollRightBtn.addEventListener('click', () => {
+                 const scrollAmount = tabsContainer.clientWidth * 0.8;
+                tabsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            });
+
+            // Actualizar estado de botones al hacer scroll manualmente
+            tabsContainer.addEventListener('scroll', updateScrollButtonsState);
+
+            // Actualizar estado de botones al cambiar tamaño de ventana (importante para responsive)
+            window.addEventListener('resize', updateScrollButtonsState);
+
+            // Establecer estado inicial de los botones
+             // Usar setTimeout para asegurar que el layout esté calculado
+            setTimeout(updateScrollButtonsState, 100);
+        }
+
+        // Ejecutar inicialización cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+
+    </script>
+
+</body>
+</html>
